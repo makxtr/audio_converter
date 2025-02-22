@@ -1,0 +1,58 @@
+version: "3.8"
+
+services:
+  go-app:
+    container_name: go_${PROJECT_NAME}
+    build:
+      context: ./
+      dockerfile: docker/configs/go/Dockerfile
+    environment:
+      - WORKDIR=${WORKDIR}
+    ports:
+      - "${GO_PORT}:8080"
+    depends_on:
+      - db_mysql_user
+      - redis
+    networks:
+      - ac
+
+  go-test:
+    container_name: go_test_${PROJECT_NAME}
+    build:
+      context: ./
+      dockerfile: docker/configs/go/Dockerfile
+    environment:
+      - WORKDIR=${WORKDIR}
+    command: go test ./...
+    depends_on:
+      - db_mysql_user
+      - redis
+    networks:
+      - ac
+
+  db_mysql_user:
+    image: mysql:latest
+    container_name: mysql_${PROJECT_NAME}
+    ports:
+      - "${MYSQL_PORT}:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpass}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-project_db}
+      MYSQL_USER: ${MYSQL_USER:-dbuser}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-pass4dbuser}
+    volumes:
+      - ./docker/databases/mysql_dump:/docker-entrypoint-initdb.d
+    networks:
+      - ac
+
+  redis:
+    image: redis:latest
+    container_name: redis_${PROJECT_NAME}
+    ports:
+      - "${REDIS_PORT}:6379"
+    networks:
+      - ac
+
+networks:
+  ac:
+    external: true

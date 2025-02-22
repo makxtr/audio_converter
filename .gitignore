@@ -1,0 +1,17 @@
+*.mp3
+*.wav
+.env.local
+.idea
+
+*.exe
+*.out
+*.a
+*.so
+*.dll
+*.dylib
+main
+
+
+/vendor/
+bin/
+pkg/
