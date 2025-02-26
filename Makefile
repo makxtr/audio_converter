@@ -23,13 +23,10 @@ format:
 	docker-compose run --rm go-app gofmt -w .
 
 run:
-	docker-compose run --rm go-app go run main.go
+	docker-compose run --rm go-app go run server.go
 
-DB_URL=mysql://root:rootpass@db_mysql_user:3306/project_db
-
-migrate-diff:
-	docker-compose --env-file .env.local exec go-app sh -c 'atlas migrate diff new_changes --to file://db/schema.hcl --dev-url "mysql://root:rootpass@db_mysql_user:3306/project_db?parseTime=true"'
-
+create-user:
+	docker-compose run --rm go-app go run cmd/create_user/main.go doe doe@mail.com pass
 
 migrate-up:
 	docker-compose exec go-app goose -dir db/migrations mysql "$(DB_URL)" up

@@ -1,3 +1,0 @@
-mysql:
-  driver: mysql
-  open: root:rootpass@tcp(db_mysql_user:13316)/project_db?parseTime=true

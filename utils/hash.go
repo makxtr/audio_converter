@@ -5,7 +5,7 @@ import (
 	"golang.org/x/crypto/argon2"
 )
 
-func hashPass(salt []byte, plainPassword string) []byte {
+func HashPass(salt []byte, plainPassword string) []byte {
 	// Делаем копию salt, чтобы избежать изменения исходного слайса
 	saltCopy := make([]byte, len(salt))
 	copy(saltCopy, salt)
@@ -14,9 +14,9 @@ func hashPass(salt []byte, plainPassword string) []byte {
 	return append(saltCopy, hashedPass...) // Теперь append не изменит оригинальный salt
 }
 
-func checkPass(passHash []byte, plainPassword string) bool {
+func CheckPass(passHash []byte, plainPassword string) bool {
 	salt := passHash[0:8]
-	userPassHash := hashPass(salt, plainPassword)
+	userPassHash := HashPass(salt, plainPassword)
 
 	return bytes.Equal(userPassHash, passHash)
 }

@@ -10,11 +10,9 @@ services:
       - WORKDIR=${WORKDIR}
     ports:
       - "${GO_PORT}:8080"
-    depends_on:
-      - db_mysql_user
-      - redis
     volumes:
-      - ./db:/app/db
+      - .:/app
+      - go-cache:/go/pkg/mod
     networks:
       - ac
 
@@ -54,6 +52,9 @@ services:
       - "${REDIS_PORT}:6379"
     networks:
       - ac
+
+volumes:
+  go-cache:
 
 networks:
   ac:

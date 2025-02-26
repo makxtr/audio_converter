@@ -6,3 +6,7 @@ type User struct {
 	Email    string
 	Password string
 }
+
+type UserRepository interface {
+	CreateUser(user *User) error
+}
