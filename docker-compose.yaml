@@ -13,6 +13,8 @@ services:
     depends_on:
       - db_mysql_user
       - redis
+    volumes:
+      - ./db:/app/db
     networks:
       - ac
 

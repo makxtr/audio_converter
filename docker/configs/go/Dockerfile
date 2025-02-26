@@ -2,6 +2,10 @@ FROM golang:latest AS builder
 
 WORKDIR /app
 
+# Устанавливаем Goose и Atlas
+RUN go install github.com/pressly/goose/v3/cmd/goose@latest
+RUN go install ariga.io/atlas/cmd/atlas@latest
+
 # Копируем файлы и загружаем зависимости
 COPY go.mod ./
 RUN go mod download
@@ -19,9 +23,8 @@ WORKDIR /app
 
 # Копируем бинарник из builder stage
 COPY --from=builder /app/main .
-
-# Копируем исходные файлы для тестирования
-COPY . .
+COPY --from=builder /go/bin/goose /usr/local/bin/goose
+COPY --from=builder /go/bin/atlas /usr/local/bin/atlas
 
 # Открываем порт приложения
 EXPOSE 8080
