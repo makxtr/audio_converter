@@ -14,20 +14,15 @@ func TestHashPass(t *testing.T) {
 	}
 
 	password := "password123"
-	hashedPass := hashPass(salt, password)
-
-	t.Logf("Salt: %x", salt)
-	t.Logf("HashedPass: %x", hashedPass)
-	t.Logf("HashedPass: %x", hashPass(salt, "asdsad"))
+	hashedPass := HashPass(salt, password)
 
 	assert.Equal(t, len(hashedPass), 40)
 	assert.True(t, bytes.Equal(hashedPass[:8], salt))
 
-	assert.Equal(t, hashPass(salt, "one")[:8], hashPass(salt, "two")[:8])
-	assert.NotEqual(t, hashPass(salt, "one"), hashPass(salt, "two"))
+	assert.Equal(t, HashPass(salt, "one")[:8], HashPass(salt, "two")[:8])
+	assert.NotEqual(t, HashPass(salt, "one"), HashPass(salt, "two"))
 
-	t.Logf("checkPass: %t", checkPass(hashedPass, "111"))
-
+	t.Logf("checkPass: %t", CheckPass(hashedPass, "111"))
 }
 
 func TestCheckPass(t *testing.T) {
@@ -37,12 +32,8 @@ func TestCheckPass(t *testing.T) {
 	}
 
 	password := "password123"
-	hashedPass := hashPass(salt, password)
+	hashedPass := HashPass(salt, password)
 
-	// Отладочная информация
-	t.Logf("Salt: %x", salt)
-	t.Logf("HashedPass: %x", hashedPass)
-
-	assert.True(t, checkPass(hashedPass, password))
-	assert.False(t, checkPass(hashedPass, "wrongpassword"))
+	assert.True(t, CheckPass(hashedPass, password))
+	assert.False(t, CheckPass(hashedPass, "wrongpassword"))
 }

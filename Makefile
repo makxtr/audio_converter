@@ -28,6 +28,8 @@ run:
 create-user:
 	docker-compose run --rm go-app go run cmd/create_user/main.go doe doe@mail.com pass
 
+DB_URL=root:rootpass@tcp(db_mysql_user:3306)/project_db
+
 migrate-up:
 	docker-compose exec go-app goose -dir db/migrations mysql "$(DB_URL)" up
 

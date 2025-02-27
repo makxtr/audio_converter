@@ -13,6 +13,8 @@ services:
     volumes:
       - .:/app
       - go-cache:/go/pkg/mod
+    depends_on:
+      - db_mysql_user
     networks:
       - ac
 
@@ -41,6 +43,7 @@ services:
       MYSQL_USER: ${MYSQL_USER:-dbuser}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD:-pass4dbuser}
     volumes:
+      - mysql_data:/var/lib/mysql
       - ./docker/databases/mysql_dump:/docker-entrypoint-initdb.d
     networks:
       - ac
@@ -55,6 +58,7 @@ services:
 
 volumes:
   go-cache:
+  mysql_data:
 
 networks:
   ac:

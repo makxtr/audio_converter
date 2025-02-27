@@ -1,13 +1,10 @@
-# Используем Go-образ
 FROM golang:latest
 
 WORKDIR /app
 
-# Копируем файлы go.mod и go.sum для кеширования зависимостей
-COPY go.mod go.sum ./
-RUN go mod download
+# Устанавливаем goose
+RUN go install github.com/pressly/goose/v3/cmd/goose@latest
 
-# Открываем порт
 EXPOSE 8080
 
 # По умолчанию запускаем сервер в режиме разработки
