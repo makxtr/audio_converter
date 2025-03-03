@@ -1,24 +1,27 @@
 package main
 
 import (
+	"audio_converter/db"
+	"audio_converter/handlers"
+	"audio_converter/repository"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
 )
 
-// healthCheckHandler - обработчик для тестового эндпоинта
-func healthCheckHandler(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("Server is running!"))
-}
-
 func startServer() {
 	port := "0.0.0.0:8080"
 	fmt.Println("Starting server on", port)
 
+	database.InitDB()
+	defer database.DB.Close()
+
+	userRepo := repository.NewUserRepository(database.DB)
+
 	mux := http.NewServeMux()
-	mux.HandleFunc("/health", healthCheckHandler)
+	mux.HandleFunc("/health", handlers.HealthCheckHandler)
+	mux.HandleFunc("/login", handlers.LoginHandler(userRepo))
 
 	// Запускаем сервер
 	err := http.ListenAndServe(port, mux)

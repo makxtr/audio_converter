@@ -2,16 +2,12 @@ package utils
 
 import (
 	"bytes"
-	"crypto/rand"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
 func TestHashPass(t *testing.T) {
-	salt := make([]byte, 8)
-	if _, err := rand.Read(salt); err != nil {
-		t.Fatalf("Ошибка генерации соли: %v", err)
-	}
+	salt := GetSalt()
 
 	password := "password123"
 	hashedPass := HashPass(salt, password)
@@ -26,10 +22,7 @@ func TestHashPass(t *testing.T) {
 }
 
 func TestCheckPass(t *testing.T) {
-	salt := make([]byte, 8)
-	if _, err := rand.Read(salt); err != nil {
-		t.Fatalf("Ошибка генерации соли: %v", err)
-	}
+	salt := GetSalt()
 
 	password := "password123"
 	hashedPass := HashPass(salt, password)

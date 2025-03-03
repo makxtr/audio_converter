@@ -2,8 +2,19 @@ package utils
 
 import (
 	"bytes"
+	"crypto/rand"
 	"golang.org/x/crypto/argon2"
 )
+
+const saltLen = 8
+
+func GetSalt() []byte {
+	salt := make([]byte, saltLen)
+	if _, err := rand.Read(salt); err != nil {
+		return nil
+	}
+	return salt
+}
 
 func HashPass(salt []byte, plainPassword string) []byte {
 	// Делаем копию salt, чтобы избежать изменения исходного слайса
@@ -15,7 +26,7 @@ func HashPass(salt []byte, plainPassword string) []byte {
 }
 
 func CheckPass(passHash []byte, plainPassword string) bool {
-	salt := passHash[0:8]
+	salt := passHash[0:saltLen]
 	userPassHash := HashPass(salt, plainPassword)
 
 	return bytes.Equal(userPassHash, passHash)

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"audio_converter/handlers"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -15,7 +16,7 @@ func TestHealthCheckHandler(t *testing.T) {
 	}
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(healthCheckHandler)
+	handler := http.HandlerFunc(handlers.HealthCheckHandler)
 	handler.ServeHTTP(rr, req)
 
 	if rr.Code != http.StatusOK {

@@ -5,7 +5,6 @@ import (
 	"audio_converter/models"
 	"audio_converter/repository"
 	"audio_converter/utils"
-	"crypto/rand"
 	_ "database/sql"
 	"encoding/hex"
 	"fmt"
@@ -31,10 +30,7 @@ func main() {
 	password := os.Args[3]
 
 	// 4️⃣ Генерируем соль и хешируем пароль
-	salt := make([]byte, 8)
-	if _, err := rand.Read(salt); err != nil {
-		log.Fatalf("Ошибка генерации соли: %v", err)
-	}
+	salt := utils.GetSalt()
 	hashedPassword := utils.HashPass(salt, password)
 
 	// 5️⃣ Создаём пользователя в базе данных

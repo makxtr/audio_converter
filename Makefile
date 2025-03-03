@@ -23,7 +23,7 @@ format:
 	docker-compose run --rm go-app gofmt -w .
 
 run:
-	docker-compose run --rm go-app go run server.go
+	docker-compose run --service-ports go-app go run server.go
 
 create-user:
 	docker-compose run --rm go-app go run cmd/create_user/main.go doe doe@mail.com pass
