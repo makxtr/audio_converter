@@ -1,6 +1,7 @@
 package main
 
 import (
+	"audio_converter/config"
 	database "audio_converter/db"
 	"audio_converter/models"
 	"audio_converter/repository"
@@ -13,14 +14,9 @@ import (
 )
 
 func main() {
-	// 1️⃣ Инициализируем подключение к БД
+	config.Init()
 	database.InitDB()
-	defer database.DB.Close() // Закрываем соединение в конце
 
-	// 2️⃣ Создаём репозиторий пользователя
-	repo := repository.NewUserRepository(database.DB)
-
-	// 3️⃣ Читаем аргументы командной строки
 	if len(os.Args) != 4 {
 		fmt.Println("Использование: go run cmd/create_user/main.go <name> <email> <password>")
 		os.Exit(1)
@@ -33,6 +29,7 @@ func main() {
 	salt := utils.GetSalt()
 	hashedPassword := utils.HashPass(salt, password)
 
+	repo := repository.NewUserRepository(database.DB)
 	// 5️⃣ Создаём пользователя в базе данных
 	user := &models.User{
 		Name:     name,

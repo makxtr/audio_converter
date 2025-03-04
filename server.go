@@ -1,6 +1,7 @@
 package main
 
 import (
+	"audio_converter/config"
 	"audio_converter/db"
 	"audio_converter/handlers"
 	"audio_converter/repository"
@@ -11,11 +12,12 @@ import (
 )
 
 func startServer() {
-	port := "0.0.0.0:8080"
-	fmt.Println("Starting server on", port)
-
+	config.Init()
 	database.InitDB()
 	defer database.DB.Close()
+
+	port := config.App.ServAddr
+	fmt.Println("Starting server on", port)
 
 	userRepo := repository.NewUserRepository(database.DB)
 
@@ -23,7 +25,6 @@ func startServer() {
 	mux.HandleFunc("/health", handlers.HealthCheckHandler)
 	mux.HandleFunc("/login", handlers.LoginHandler(userRepo))
 
-	// Запускаем сервер
 	err := http.ListenAndServe(port, mux)
 	if err != nil {
 		log.Fatalf("Server failed: %s", err)
@@ -37,6 +38,5 @@ func main() {
 		return
 	}
 
-	// Запускаем сервер
 	startServer()
 }
