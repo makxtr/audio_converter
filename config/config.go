@@ -20,7 +20,7 @@ var App Config
 
 func Init() {
 	if err := godotenv.Load(".env"); err != nil {
-		log.Println("Файл .env не найден, используем переменные окружения")
+		log.Println("File .env not found, using environment variables")
 	}
 
 	App = Config{
@@ -31,9 +31,8 @@ func Init() {
 		DBName:     os.Getenv("MYSQL_DATABASE"),
 		ServAddr:   os.Getenv("SERVER_ADDR"),
 	}
-
-	// Проверяем, что все переменные заданы
+	
 	if App.DBHost == "" || App.DBPort == "" || App.DBUser == "" || App.DBPassword == "" || App.DBName == "" {
-		log.Fatal("Не заданы переменные окружения для MySQL")
+		log.Fatal("Environment variables not set for MySQL")
 	}
 }

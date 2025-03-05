@@ -18,7 +18,7 @@ func main() {
 	database.InitDB()
 
 	if len(os.Args) != 4 {
-		fmt.Println("Использование: go run cmd/create_user/main.go <name> <email> <password>")
+		fmt.Println("Use: go run cmd/create_user/main.go <name> <email> <password>")
 		os.Exit(1)
 	}
 	name := os.Args[1]
@@ -29,17 +29,16 @@ func main() {
 	salt := utils.GetSalt()
 	hashedPassword := utils.HashPass(salt, password)
 
-	repo := repository.NewUserRepository(database.DB)
 	// 5️⃣ Создаём пользователя в базе данных
 	user := &models.User{
 		Name:     name,
 		Email:    email,
 		Password: hex.EncodeToString(hashedPassword),
 	}
-	if err := repo.CreateUser(user); err != nil {
-		log.Fatalf("Ошибка создания пользователя: %v", err)
+	if err := repository.NewUserRepository(database.DB).CreateUser(user); err != nil {
+		log.Fatalf("Error creating user: %v", err)
 	}
 
-	fmt.Println("✅ Пользователь успешно создан!")
-	fmt.Println("🔑 Сгенерированная соль (hex):", hex.EncodeToString(salt))
+	fmt.Println("✅ User successfully created!")
+	fmt.Println("🔑 Generated salt (hex):", hex.EncodeToString(salt))
 }

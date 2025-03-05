@@ -1,12 +1,12 @@
 package database
 
 import (
+	"audio_converter/config"
 	"database/sql"
 	"fmt"
-	"log"
-
-	"audio_converter/config"
 	_ "github.com/go-sql-driver/mysql"
+	"log"
+	"time"
 )
 
 var DB *sql.DB
@@ -21,7 +21,10 @@ func InitDB() {
 		log.Fatalf("Ошибка подключения к MySQL: %v", err)
 	}
 
-	// Проверяем соединение
+	DB.SetMaxOpenConns(25)
+	DB.SetMaxIdleConns(5)
+	DB.SetConnMaxLifetime(time.Hour)
+
 	err = DB.Ping()
 	if err != nil {
 		log.Fatalf("Ошибка соединения с MySQL: %v", err)

@@ -17,8 +17,6 @@ func TestHashPass(t *testing.T) {
 
 	assert.Equal(t, HashPass(salt, "one")[:8], HashPass(salt, "two")[:8])
 	assert.NotEqual(t, HashPass(salt, "one"), HashPass(salt, "two"))
-
-	t.Logf("checkPass: %t", CheckPass(hashedPass, "111"))
 }
 
 func TestCheckPass(t *testing.T) {
