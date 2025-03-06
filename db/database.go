@@ -13,12 +13,12 @@ var DB *sql.DB
 
 func InitDB() {
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=true",
-		config.App.DBUser, config.App.DBPassword, config.App.DBHost, "3306", config.App.DBName)
+		config.App.DB.User, config.App.DB.Password, config.App.DB.Host, "3306", config.App.DB.Name)
 
 	var err error
 	DB, err = sql.Open("mysql", dsn)
 	if err != nil {
-		log.Fatalf("Ошибка подключения к MySQL: %v", err)
+		log.Fatalf("MySQL connection error: %v", err)
 	}
 
 	DB.SetMaxOpenConns(25)
@@ -27,8 +27,8 @@ func InitDB() {
 
 	err = DB.Ping()
 	if err != nil {
-		log.Fatalf("Ошибка соединения с MySQL: %v", err)
+		log.Fatalf("MySQL Ping error: %v", err)
 	}
 
-	fmt.Println("✅ Успешное подключение к MySQL!")
+	fmt.Println("✅ Successful connection to MySQL!")
 }

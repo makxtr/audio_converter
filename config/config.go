@@ -8,12 +8,16 @@ import (
 )
 
 type Config struct {
-	DBHost     string
-	DBPort     string
-	DBUser     string
-	DBPassword string
-	DBName     string
-	ServAddr   string
+	DB struct {
+		Host     string
+		Port     string
+		User     string
+		Password string
+		Name     string
+	}
+	Server struct {
+		Addr string
+	}
 }
 
 var App Config
@@ -24,15 +28,27 @@ func Init() {
 	}
 
 	App = Config{
-		DBHost:     os.Getenv("MYSQL_HOST"),
-		DBPort:     os.Getenv("MYSQL_PORT"),
-		DBUser:     os.Getenv("MYSQL_USER"),
-		DBPassword: os.Getenv("MYSQL_PASSWORD"),
-		DBName:     os.Getenv("MYSQL_DATABASE"),
-		ServAddr:   os.Getenv("SERVER_ADDR"),
+		DB: struct {
+			Host     string
+			Port     string
+			User     string
+			Password string
+			Name     string
+		}{
+			Host:     os.Getenv("MYSQL_HOST"),
+			Port:     os.Getenv("MYSQL_PORT"),
+			User:     os.Getenv("MYSQL_USER"),
+			Password: os.Getenv("MYSQL_PASSWORD"),
+			Name:     os.Getenv("MYSQL_DATABASE"),
+		},
+		Server: struct {
+			Addr string
+		}{
+			Addr: os.Getenv("SERVER_ADDR"),
+		},
 	}
-	
-	if App.DBHost == "" || App.DBPort == "" || App.DBUser == "" || App.DBPassword == "" || App.DBName == "" {
+
+	if App.DB.Host == "" || App.DB.Port == "" || App.DB.User == "" || App.DB.Password == "" || App.DB.Name == "" {
 		log.Fatal("Environment variables not set for MySQL")
 	}
 }

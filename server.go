@@ -16,7 +16,7 @@ func startServer() {
 	database.InitDB()
 	defer database.DB.Close()
 
-	port := config.App.ServAddr
+	port := config.App.Server.Addr
 	fmt.Println("Starting server on", port)
 
 	userRepo := repository.NewUserRepository(database.DB)
