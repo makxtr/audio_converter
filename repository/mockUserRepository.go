@@ -6,8 +6,9 @@ import (
 )
 
 type MockUserRepository struct {
-	User *models.User
-	Err  error
+	User   *models.User
+	Access *models.UserAccess
+	Err    error
 }
 
 func (m *MockUserRepository) CreateUser(user *models.User) error {
@@ -16,6 +17,10 @@ func (m *MockUserRepository) CreateUser(user *models.User) error {
 
 func (m *MockUserRepository) CreateUserAccess(access *models.UserAccess) error {
 	return m.Err
+}
+
+func (m *MockUserRepository) FindUserAccessByToken(token string) (*models.UserAccess, error) {
+	return m.Access, m.Err
 }
 
 func (m *MockUserRepository) FindByEmail(email string) (*models.User, error) {

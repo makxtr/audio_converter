@@ -4,6 +4,7 @@ import (
 	"audio_converter/config"
 	"audio_converter/db"
 	"audio_converter/handlers"
+	"audio_converter/middleware"
 	"audio_converter/repository"
 	"fmt"
 	"log"
@@ -24,6 +25,10 @@ func startServer() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/health", handlers.HealthCheckHandler)
 	mux.HandleFunc("/login", handlers.LoginHandler(userRepo))
+
+	// Защищенный маршрут с middleware
+	securityHandler := http.HandlerFunc(handlers.SecurityHandler)
+	mux.Handle("/security", middleware.AuthMiddleware(userRepo)(securityHandler))
 
 	err := http.ListenAndServe(port, mux)
 	if err != nil {
