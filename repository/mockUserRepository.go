@@ -14,6 +14,10 @@ func (m *MockUserRepository) CreateUser(user *models.User) error {
 	return m.Err
 }
 
+func (m *MockUserRepository) CreateUserAccess(access *models.UserAccess) error {
+	return m.Err
+}
+
 func (m *MockUserRepository) FindByEmail(email string) (*models.User, error) {
 	if m.Err != nil {
 		return nil, m.Err

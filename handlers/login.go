@@ -6,6 +6,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"net/http"
+	"time"
 )
 
 type LoginRequest struct {
@@ -14,7 +15,8 @@ type LoginRequest struct {
 }
 
 type LoginResponse struct {
-	ID int `json:"id"`
+	ID    int    `json:"id"`
+	Token string `json:"token"`
 }
 
 func LoginHandler(userRepo models.UserRepository) http.HandlerFunc {
@@ -49,8 +51,22 @@ func LoginHandler(userRepo models.UserRepository) http.HandlerFunc {
 			return
 		}
 
+		token := utils.GenToken()
+		// Сохраняем токен в базу данных
+		expiresAt := time.Now().Add(24 * time.Hour) // Токен действителен 24 часа
+		userAccess := &models.UserAccess{
+			UserID:    user.ID,
+			Token:     token,
+			ExpiresAt: expiresAt,
+		}
+
+		if err := userRepo.CreateUserAccess(userAccess); err != nil {
+			http.Error(w, "Ошибка при создании токена", http.StatusInternalServerError)
+			return
+		}
+
 		// Успешный вход, отправляем ID
-		resp := LoginResponse{ID: user.ID}
+		resp := LoginResponse{ID: user.ID, Token: token}
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(resp)
 	}

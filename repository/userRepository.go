@@ -38,3 +38,14 @@ func (r *UserRepositorySQL) FindByEmail(email string) (*models.User, error) {
 	}
 	return user, nil
 }
+
+func (r *UserRepositorySQL) CreateUserAccess(access *models.UserAccess) error {
+	_, err := r.db.Exec(
+		"INSERT INTO user_access (user_id, token, expires_at) VALUES (?, ?, ?)",
+		access.UserID, access.Token, access.ExpiresAt,
+	)
+	if err != nil {
+		return errors.New("Access not created: " + err.Error())
+	}
+	return nil
+}
