@@ -19,7 +19,10 @@ type LoginResponse struct {
 	Token string `json:"token"`
 }
 
-func LoginHandler(userRepo models.UserRepository) http.HandlerFunc {
+func LoginHandler(
+	userRepo models.UserRepository,
+	accessRepo models.AccessRepository,
+) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodPost {
 			http.Error(w, "Метод не поддерживается", http.StatusMethodNotAllowed)
@@ -54,13 +57,13 @@ func LoginHandler(userRepo models.UserRepository) http.HandlerFunc {
 		token := utils.GenToken()
 		// Сохраняем токен в базу данных
 		expiresAt := time.Now().Add(24 * time.Hour) // Токен действителен 24 часа
-		userAccess := &models.UserAccess{
+		userAccess := &models.Access{
 			UserID:    user.ID,
 			Token:     token,
 			ExpiresAt: expiresAt,
 		}
 
-		if err := userRepo.CreateUserAccess(userAccess); err != nil {
+		if err := accessRepo.CreateAccess(userAccess); err != nil {
 			http.Error(w, "Ошибка при создании токена", http.StatusInternalServerError)
 			return
 		}

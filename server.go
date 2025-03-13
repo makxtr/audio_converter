@@ -21,14 +21,14 @@ func startServer() {
 	fmt.Println("Starting server on", port)
 
 	userRepo := repository.NewUserRepository(database.DB)
+	accessRepo := repository.NewAccessRepository(database.DB)
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("/health", handlers.HealthCheckHandler)
-	mux.HandleFunc("/login", handlers.LoginHandler(userRepo))
+	mux.HandleFunc("/login", handlers.LoginHandler(userRepo, accessRepo))
 
-	// Защищенный маршрут с middleware
 	securityHandler := http.HandlerFunc(handlers.SecurityHandler)
-	mux.Handle("/security", middleware.AuthMiddleware(userRepo)(securityHandler))
+	mux.Handle("/security", middleware.AuthMiddleware(accessRepo)(securityHandler))
 
 	err := http.ListenAndServe(port, mux)
 	if err != nil {

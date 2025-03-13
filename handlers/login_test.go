@@ -25,6 +25,13 @@ func TestLoginHandler_Success(t *testing.T) {
 	}
 	repo := &repository.MockUserRepository{User: user}
 
+	token := utils.GenToken()
+	access := &models.Access{
+		UserID: user.ID,
+		Token:  token,
+	}
+	accessRepo := &repository.MockAccessRepository{Access: access}
+
 	// Создаём запрос
 	reqBody := `{"email": "test@example.com", "password": "password"}`
 	req := httptest.NewRequest(http.MethodPost, "/login", strings.NewReader(reqBody))
@@ -34,7 +41,7 @@ func TestLoginHandler_Success(t *testing.T) {
 	rec := httptest.NewRecorder()
 
 	// Вызываем обработчик
-	handler := LoginHandler(repo)
+	handler := LoginHandler(repo, accessRepo)
 	handler.ServeHTTP(rec, req)
 
 	// Проверяем статус код
