@@ -21,9 +21,8 @@ func AuthMiddleware(accessRepo models.AccessRepository) func(http.Handler) http.
 				http.Error(w, "Invalid token", http.StatusUnauthorized)
 				return
 			}
-
-			// Проверяем срок действия токена
-			if time.Now().After(access.ExpiresAt) {
+			
+			if time.Now().After(access.Token.ExpiresAt) {
 				http.Error(w, "Token expire", http.StatusUnauthorized)
 				return
 			}

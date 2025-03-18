@@ -17,7 +17,7 @@ func NewAccessRepository(db *sql.DB) *AccessRepositorySQL {
 func (r *AccessRepositorySQL) FindAccessByToken(token string) (*models.Access, error) {
 	query := `SELECT user_id, token, expires_at FROM user_access WHERE token = ?`
 	access := &models.Access{}
-	err := r.db.QueryRow(query, token).Scan(&access.UserID, &access.Token.Value, &access.ExpiresAt)
+	err := r.db.QueryRow(query, token).Scan(&access.UserID, &access.Token.Value, &access.Token.ExpiresAt)
 	if err != nil {
 		return nil, err
 	}
@@ -27,7 +27,7 @@ func (r *AccessRepositorySQL) FindAccessByToken(token string) (*models.Access, e
 func (r *AccessRepositorySQL) CreateAccess(access *models.Access) error {
 	_, err := r.db.Exec(
 		"INSERT INTO user_access (user_id, token, expires_at) VALUES (?, ?, ?)",
-		access.UserID, access.Token.Value, access.ExpiresAt,
+		access.UserID, access.Token.Value, access.Token.ExpiresAt,
 	)
 	if err != nil {
 		return errors.New("Access not created: " + err.Error())

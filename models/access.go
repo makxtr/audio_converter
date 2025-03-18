@@ -7,7 +7,6 @@ type Access struct {
 	UserID    int
 	Token     Token
 	CreatedAt time.Time
-	ExpiresAt time.Time
 }
 
 type AccessRepository interface {
