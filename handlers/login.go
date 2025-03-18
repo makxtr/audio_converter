@@ -1,12 +1,9 @@
 package handlers
 
 import (
-	"audio_converter/models"
-	"audio_converter/utils"
-	"encoding/hex"
+	"audio_converter/usecases/auth"
 	"encoding/json"
 	"net/http"
-	"time"
 )
 
 type LoginRequest struct {
@@ -19,10 +16,7 @@ type LoginResponse struct {
 	Token string `json:"token"`
 }
 
-func LoginHandler(
-	userRepo models.UserRepository,
-	accessRepo models.AccessRepository,
-) http.HandlerFunc {
+func LoginHandler(authUC *auth.AuthUseCase) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodPost {
 			http.Error(w, "Метод не поддерживается", http.StatusMethodNotAllowed)
@@ -35,41 +29,21 @@ func LoginHandler(
 			return
 		}
 
-		// Найти пользователя в БД
-		user, err := userRepo.FindByEmail(req.Email)
+		user, token, err := authUC.Login(req.Email, req.Password)
 		if err != nil {
-			http.Error(w, "Неверный email или пароль", http.StatusUnauthorized)
+			switch err {
+			case auth.ErrInvalidCredentials:
+				http.Error(w, "Неверный email или пароль", http.StatusUnauthorized)
+			case auth.ErrTokenCreation:
+				http.Error(w, "Ошибка при создании токена", http.StatusInternalServerError)
+			default:
+				http.Error(w, "Внутренняя ошибка сервера", http.StatusInternalServerError)
+			}
 			return
 		}
 
-		passHash, err := hex.DecodeString(user.Password)
-		if err != nil {
-			http.Error(w, "Ошибка при декодировании пароля", http.StatusInternalServerError)
-			return
-		}
-
-		// Проверка пароля
-		if !utils.CheckPass(passHash, req.Password) {
-			http.Error(w, "Неверный email или пароль", http.StatusUnauthorized)
-			return
-		}
-
-		token := utils.GenToken()
-		// Сохраняем токен в базу данных
-		expiresAt := time.Now().Add(24 * time.Hour) // Токен действителен 24 часа
-		userAccess := &models.Access{
-			UserID:    user.ID,
-			Token:     token,
-			ExpiresAt: expiresAt,
-		}
-
-		if err := accessRepo.CreateAccess(userAccess); err != nil {
-			http.Error(w, "Ошибка при создании токена", http.StatusInternalServerError)
-			return
-		}
-
-		// Успешный вход, отправляем ID
-		resp := LoginResponse{ID: user.ID, Token: token}
+		// Успешный вход, отправляем ответ
+		resp := LoginResponse{ID: user.ID, Token: token.Value}
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(resp)
 	}

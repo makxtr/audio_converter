@@ -18,7 +18,7 @@ func (m *MockAccessRepository) FindAccessByToken(token string) (*models.Access, 
 	if m.Err != nil {
 		return nil, m.Err
 	}
-	if m.Access != nil && m.Access.Token == token {
+	if m.Access != nil && m.Access.Token.Value == token {
 		return m.Access, nil
 	}
 	return nil, errors.New("token not found")

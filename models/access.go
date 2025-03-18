@@ -5,7 +5,7 @@ import "time"
 type Access struct {
 	ID        int
 	UserID    int
-	Token     string
+	Token     Token
 	CreatedAt time.Time
 	ExpiresAt time.Time
 }

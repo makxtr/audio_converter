@@ -5,7 +5,9 @@ import (
 	"audio_converter/db"
 	"audio_converter/handlers"
 	"audio_converter/middleware"
+	"audio_converter/models"
 	"audio_converter/repository"
+	"audio_converter/usecases/auth"
 	"fmt"
 	"log"
 	"net/http"
@@ -25,7 +27,7 @@ func startServer() {
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("/health", handlers.HealthCheckHandler)
-	mux.HandleFunc("/login", handlers.LoginHandler(userRepo, accessRepo))
+	mux.HandleFunc("/login", handlers.LoginHandler(auth.NewAuthUseCase(userRepo, accessRepo, &models.Token{})))
 
 	securityHandler := http.HandlerFunc(handlers.SecurityHandler)
 	mux.Handle("/security", middleware.AuthMiddleware(accessRepo)(securityHandler))
