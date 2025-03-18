@@ -27,7 +27,7 @@ func startServer() {
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("/health", handlers.HealthCheckHandler)
-	mux.HandleFunc("/login", handlers.LoginHandler(auth.NewAuthUseCase(userRepo, accessRepo, &models.Token{})))
+	mux.HandleFunc("/login", handlers.LoginHandler(auth.NewAuthUseCase(userRepo, accessRepo, &models.DefaultTokenGenerator{})))
 
 	securityHandler := http.HandlerFunc(handlers.SecurityHandler)
 	mux.Handle("/security", middleware.AuthMiddleware(accessRepo)(securityHandler))

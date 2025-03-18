@@ -5,7 +5,6 @@ import (
 	"time"
 )
 
-// TokenGenerator — интерфейс для генерации токенов
 type TokenGenerator interface {
 	GenerateToken() *Token
 }
@@ -15,7 +14,9 @@ type Token struct {
 	ExpiresAt time.Time
 }
 
-func (t *Token) GenerateToken() *Token {
+type DefaultTokenGenerator struct{}
+
+func (g *DefaultTokenGenerator) GenerateToken() *Token {
 	return &Token{
 		Value:     utils.GenToken(),
 		ExpiresAt: time.Now().Add(24 * time.Hour),
