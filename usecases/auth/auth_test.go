@@ -22,7 +22,7 @@ func TestAuthUseCase_Success(t *testing.T) {
 	token := &models.Token{}
 	access := &models.Access{
 		UserID: user.ID,
-		Token:  *token,
+		Token:  token,
 	}
 	accessRepo := &repository.MockAccessRepository{Access: access}
 	tokenGenerator := &repository.MockTokenGenerator{Token: token}

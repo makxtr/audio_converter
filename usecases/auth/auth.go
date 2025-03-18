@@ -48,7 +48,7 @@ func (uc *AuthUseCase) Login(email, password string) (*models.User, *models.Toke
 	token := uc.tokenGen.GenerateToken()
 	userAccess := &models.Access{
 		UserID: user.ID,
-		Token:  *token,
+		Token:  token,
 	}
 
 	if err := uc.accessRepo.CreateAccess(userAccess); err != nil {
