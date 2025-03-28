@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"audio_converter/apperrors"
 	"audio_converter/usecases/auth"
 	"encoding/json"
 	"net/http"
@@ -31,18 +32,9 @@ func LoginHandler(authUC *auth.AuthUseCase) http.HandlerFunc {
 
 		user, token, err := authUC.Login(req.Email, req.Password)
 		if err != nil {
-			switch err {
-			case auth.ErrInvalidCredentials:
-				http.Error(w, "Неверный email или пароль", http.StatusUnauthorized)
-			case auth.ErrTokenCreation:
-				http.Error(w, "Ошибка при создании токена", http.StatusInternalServerError)
-			default:
-				http.Error(w, "Внутренняя ошибка сервера", http.StatusInternalServerError)
-			}
+			apperrors.WriteHttpError(w, err)
 			return
 		}
-
-		// Успешный вход, отправляем ответ
 		resp := LoginResponse{ID: user.ID, Token: token.Value}
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(resp)

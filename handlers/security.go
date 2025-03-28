@@ -6,10 +6,8 @@ import (
 )
 
 func SecurityHandler(w http.ResponseWriter, r *http.Request) {
-	// Получаем userID из контекста
 	userID := r.Context().Value("userID").(int)
 
-	// Возвращаем ответ
 	response := map[string]interface{}{
 		"message": "OK",
 		"userID":  userID,

@@ -1,15 +1,16 @@
 package auth
 
 import (
+	"audio_converter/apperrors"
 	"audio_converter/models"
 	"audio_converter/utils"
 	"encoding/hex"
-	"errors"
+	"net/http"
 )
 
 var (
-	ErrInvalidCredentials = errors.New("неверный email или пароль")
-	ErrTokenCreation      = errors.New("ошибка при создании токена")
+	ErrInvalidCredentials = apperrors.NewHttpError(http.StatusUnauthorized, "неверный email или пароль")
+	ErrTokenCreation      = apperrors.NewHttpError(http.StatusInternalServerError, "ошибка при создании токена")
 )
 
 type AuthUseCase struct {
