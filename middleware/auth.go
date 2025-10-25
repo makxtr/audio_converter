@@ -21,13 +21,12 @@ func AuthMiddleware(accessRepo models.AccessRepository) func(http.Handler) http.
 				http.Error(w, "Invalid token", http.StatusUnauthorized)
 				return
 			}
-			
+
 			if time.Now().After(access.Token.ExpiresAt) {
 				http.Error(w, "Token expire", http.StatusUnauthorized)
 				return
 			}
 
-			// Добавляем информацию о пользователе в контекст запроса
 			ctx := context.WithValue(r.Context(), "userID", access.UserID)
 			next.ServeHTTP(w, r.WithContext(ctx))
 		})

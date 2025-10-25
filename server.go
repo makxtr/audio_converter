@@ -2,7 +2,7 @@ package main
 
 import (
 	"audio_converter/config"
-	"audio_converter/db"
+	database "audio_converter/db"
 	"audio_converter/handlers"
 	"audio_converter/middleware"
 	"audio_converter/models"
@@ -16,14 +16,17 @@ import (
 
 func startServer() {
 	config.Init()
-	database.InitDB()
-	defer database.DB.Close()
+	db, err := database.InitDB()
+	if err != nil {
+		log.Fatalf("Error initializing database: %v", err)
+	}
+	defer db.Close()
 
 	port := config.App.Server.Addr
 	fmt.Println("Starting server on", port)
 
-	userRepo := repository.NewUserRepository(database.DB)
-	accessRepo := repository.NewAccessRepository(database.DB)
+	userRepo := repository.NewUserRepository(db)
+	accessRepo := repository.NewAccessRepository(db)
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("/health", handlers.HealthCheckHandler)
@@ -32,14 +35,13 @@ func startServer() {
 	securityHandler := http.HandlerFunc(handlers.SecurityHandler)
 	mux.Handle("/security", middleware.AuthMiddleware(accessRepo)(securityHandler))
 
-	err := http.ListenAndServe(port, mux)
+	err = http.ListenAndServe(port, mux)
 	if err != nil {
 		log.Fatalf("Server failed: %s", err)
 	}
 }
 
 func main() {
-	// Если GO_TEST=true, сервер НЕ запускается
 	if os.Getenv("GO_TEST") == "true" {
 		fmt.Println("Skipping server start for tests")
 		return

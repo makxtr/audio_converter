@@ -8,7 +8,6 @@ import (
 	"testing"
 )
 
-// TestHealthCheckHandler проверяет, что эндпоинт `/health` работает
 func TestHealthCheckHandler(t *testing.T) {
 	req, err := http.NewRequest("GET", "/health", nil)
 	if err != nil {

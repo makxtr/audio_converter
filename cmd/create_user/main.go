@@ -15,7 +15,11 @@ import (
 
 func main() {
 	config.Init()
-	database.InitDB()
+	db, err := database.InitDB()
+	if err != nil {
+		log.Fatalf("Error initializing database: %v", err)
+	}
+	defer db.Close()
 
 	if len(os.Args) != 4 {
 		fmt.Println("Use: go run cmd/create_user/main.go <name> <email> <password>")
@@ -25,17 +29,14 @@ func main() {
 	email := os.Args[2]
 	password := os.Args[3]
 
-	// 4️⃣ Генерируем соль и хешируем пароль
 	salt := utils.GetSalt()
 	hashedPassword := utils.HashPass(salt, password)
-
-	// 5️⃣ Создаём пользователя в базе данных
 	user := &models.User{
 		Name:     name,
 		Email:    email,
 		Password: hex.EncodeToString(hashedPassword),
 	}
-	if err := repository.NewUserRepository(database.DB).CreateUser(user); err != nil {
+	if err := repository.NewUserRepository(db).CreateUser(user); err != nil {
 		log.Fatalf("Error creating user: %v", err)
 	}
 

@@ -4,31 +4,33 @@ import (
 	"audio_converter/config"
 	"database/sql"
 	"fmt"
-	_ "github.com/go-sql-driver/mysql"
-	"log"
 	"time"
+
+	_ "github.com/go-sql-driver/mysql"
 )
 
-var DB *sql.DB
-
-func InitDB() {
+func InitDB() (*sql.DB, error) {
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=true",
-		config.App.DB.User, config.App.DB.Password, config.App.DB.Host, "3306", config.App.DB.Name)
+		config.App.DB.User,
+		config.App.DB.Password,
+		config.App.DB.Host,
+		"3306", config.App.DB.Name,
+	)
 
 	var err error
-	DB, err = sql.Open("mysql", dsn)
+	db, err := sql.Open("mysql", dsn)
 	if err != nil {
-		log.Fatalf("MySQL connection error: %v", err)
+		return nil, fmt.Errorf("MySQL connection error: %w", err)
 	}
 
-	DB.SetMaxOpenConns(25)
-	DB.SetMaxIdleConns(5)
-	DB.SetConnMaxLifetime(time.Hour)
+	db.SetMaxOpenConns(25)
+	db.SetMaxIdleConns(5)
+	db.SetConnMaxLifetime(time.Hour)
 
-	err = DB.Ping()
-	if err != nil {
-		log.Fatalf("MySQL Ping error: %v", err)
+	if err = db.Ping(); err != nil {
+		return nil, fmt.Errorf("MySQL Ping error: %w", err)
 	}
 
 	fmt.Println("✅ Successful connection to MySQL!")
+	return db, nil
 }
